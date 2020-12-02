@@ -234,7 +234,7 @@ function generate_versions() {
 }
 
 function tag_logs() {
-    git log --oneline --pretty=format:'        %s' ${RANGE}
+    git log --oneline --pretty=format:'    %s' ${RANGE}
 }
 
 function create_merge_message {
