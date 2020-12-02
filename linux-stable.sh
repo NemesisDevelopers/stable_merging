@@ -24,6 +24,7 @@ GRN="\033[01;32m"
 RED="\033[01;31m"
 RST="\033[0m"
 YLW="\033[01;33m"
+branch=$(git rev-parse --abbrev-ref HEAD)
 
 
 # Alias for echo to handle escape codes like colors
@@ -174,7 +175,7 @@ function update_remote() {
     # Add remote if it isn't already present
     cd "${KERNEL_FOLDER}" || die "Could not change into ${KERNEL_FOLDER}!"
 
-    if git fetch --tags https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/; then
+    if git fetch upstream; then
         success "linux-stable updated successfully!"
     else
         die "linux-stable update failed!"
@@ -232,6 +233,18 @@ function generate_versions() {
     echo
 }
 
+function tag_logs() {
+    git log --oneline --pretty=format:'        %s' ${RANGE}
+}
+
+function create_merge_message {
+    [[ -f '/tmp/merge_msg' ]] && rm -f '/tmp/merge_msg'
+    echo "Merge ${TARGET_VERSION} into ${branch}" > '/tmp/merge_msg'
+    echo -en "\n" >> '/tmp/merge_msg'
+    echo "Changes in '${TARGET_VERSION}': ($(git rev-list v${CURRENT_VERSION}..v${TARGET_VERSION} --count) commits)" >> '/tmp/merge_msg'
+    echo "$(tag_logs)" >> '/tmp/merge_msg'
+}
+
 
 function update_to_target_version() {
     case ${UPDATE_METHOD} in
@@ -245,12 +258,13 @@ git add . && git cherry-pick --continue"
             fi ;;
 
         "merge")
-            if ! GIT_MERGE_VERBOSITY=1 git merge --no-edit "v${TARGET_VERSION}"; then
+            if ! GIT_MERGE_VERBOSITY=1 git merge --edit -F '/tmp/merge_msg' "v${TARGET_VERSION}" --no-edit; then
                 die "Merge needs manual intervention!
 
 Resolve conflicts then run git commit!"
             else
                 header "${TARGET_VERSION} MERGED CLEANLY!" "${GRN}"
+                git commit -q --amend -F '/tmp/merge_msg' --no-edit
             fi ;;
     esac
 }
@@ -259,4 +273,5 @@ Resolve conflicts then run git commit!"
 parse_parameters "$@"
 update_remote
 generate_versions
+create_merge_message
 update_to_target_version
