@@ -4,7 +4,7 @@ This script is designed to help you merge or pick linux-stable into your own ker
 
 Either clone this repo or run the following command in the root of your kernel folder:
 
-`curl -o linux-stable.sh https://raw.githubusercontent.com/android-linux-stable/script/master/linux-stable.sh && chmod +x linux-stable.sh`
+`curl -o linux-stable.sh https://raw.githubusercontent.com/NemesisDevelopers/stable_merging/master/linux-stable.sh && chmod +x linux-stable.sh`
 
 Once you have it downloaded, run `./linux-stable.sh -h` to learn more about it
 
