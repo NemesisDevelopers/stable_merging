@@ -30,6 +30,7 @@ branch=$(git rev-parse --abbrev-ref HEAD)
 KARNAL="--tags https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/"
 USER=$(git config --get user.name)
 EMAIL=$(git config --get user.email)
+LOG_REVERSE=printf '\n$(git log --reverse --format="        %s" "${RANGE}")\n'
 
 # Alias for echo to handle escape codes like colors
 function echo() {
@@ -246,7 +247,7 @@ function create_merge_message {
     echo "Merge ${TARGET_VERSION} into ${branch}" > '/tmp/merge_msg'
     echo -en "\n" >> '/tmp/merge_msg'
     echo "Changes in '${TARGET_VERSION}': ($(git rev-list v${CURRENT_VERSION}..v${TARGET_VERSION} --count) commits)" >> '/tmp/merge_msg'
-    echo "$(tag_logs)" >> '/tmp/merge_msg'
+    echo "${LOG_REVERSE}" >> '/tmp/merge_msg'
     echo "\nSigned-off-by: ${USER} <${EMAIL}>" >> '/tmp/merge_msg'
 }
 
