@@ -243,7 +243,7 @@ function tag_logs() {
 
 function create_merge_message {
     [[ -f '/tmp/merge_msg' ]] && rm -f '/tmp/merge_msg'
-    echo "Merge ${TARGET_VERSION} into ${branch}" > '/tmp/merge_msg'
+    echo "Linux: ${TARGET_VERSION} release" > '/tmp/merge_msg'
     echo -en "\n" >> '/tmp/merge_msg'
     echo "Changes in '${TARGET_VERSION}': ($(git rev-list v${CURRENT_VERSION}..v${TARGET_VERSION} --count) commits)" >> '/tmp/merge_msg'
     echo "$(tag_logs)" >> '/tmp/merge_msg'
